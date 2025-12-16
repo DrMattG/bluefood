@@ -1,0 +1,159 @@
+---
+title: "visualisations and analysis"
+output: word_document
+date: "2025-12-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data <- read.csv('data/data.csv')
+library(tidyverse)
+library(taylor) # colour palettes
+library(ggtext) # italics
+```
+
+## Composite plot
+
+
+```{r chunk_1, echo=FALSE}
+#### species ####
+# separate study species
+species <- separate_rows(data, Study.species, sep = ", ")
+# count species
+species_count <- count(species, Study.species)
+# set factor ordering
+species_count$Study.species <- species_count$Study.species %>%
+  as.factor() %>%
+  factor(levels=c("Atlantic cod (Gadus morhua)",
+                  "Gilthead sea bream (Sparus aurata)",
+                  "Sea bass (Dicentrus labrax)",
+                  "Atlantic salmon (Salmo salar)",
+                  "Chinook salmon (Oncorhynchus tshawytscha)",
+                  "Chum salmon (Oncorhynchus keta)",
+                  "Coho salmon (Oncorhynchus kisutch)",
+                  "Pink salmon (Oncorhynchus gorbuscha)",
+                  "Salmon (unspecified)"))
+# set palette
+n_col <- nrow(species_count)
+palette <- color_palette(my_pal, n = n_col)
+species_count <- mutate(species_count, palette = as.vector(palette))
+# stacked bar plot
+ggplot(species_count,
+  aes(fill = Study.species, y = n, x = 1)
+) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = species_count$palette,
+    labels = function(x) {
+      x %>%
+        gsub("\\(", "\\(\\*", .) %>%
+        gsub("\\)", "\\*)", .) %>%
+        gsub("\\*unspecified\\*", "unspecified", .)
+    }
+  ) +
+  theme_classic() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x  = element_blank(),
+    legend.text = element_markdown()
+  ) +
+  ylab("Study count") +
+  ylim(c(0,nrow(species))) +
+  guides(fill = guide_legend(title = "Study species"))
+#### close ####
+
+#### production stage ####
+# separate study species
+production <- separate_rows(data, Production.stage, sep = ", ")
+# count species
+production_count <- count(production, Production.stage)
+# set factor ordering
+production_count$Production.stage <- production_count$Production.stage %>%
+  as.factor() %>%
+  factor(levels=c("Feed",
+                  "Roe",
+                  "Fry",
+                  "Smolt",
+                  "Adult",
+                  "Processing",
+                  "Not stated"))
+# set palette
+n_col <- nrow(production_count)
+palette <- color_palette(my_pal, n = n_col)
+production_count <- mutate(production_count, palette = as.vector(palette))
+# stacked bar plot
+ggplot(production_count,
+       aes(fill = Production.stage, y = n, x = 1)
+) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = production_count$palette) +
+  theme_classic() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x  = element_blank(),
+    legend.text = element_markdown()
+  ) +
+  ylab("Study count") +
+  ylim(c(0,nrow(production))) +
+  guides(fill = guide_legend(title = "Production stage"))
+
+#### close ####
+
+#### farming system ####
+# separate study species
+farming <- separate_rows(data, Farming.system.coding, sep = ", ")
+# count species
+farming_count <- count(farming, Farming.system.coding)
+# set factor ordering
+farming_count$Farming.system.coding <- farming_count$Farming.system.coding %>%
+  as.factor() %>%
+  factor(levels=c("Freshwater hatcheries",
+                  "Offshore pens",
+                  "Semi-closed pens",
+                  "Processing plants",
+                  "Integrated Multi-Trophic Aquaculture (IMTA)",
+                  "Multi-Purpose Platforms (MPPs)",
+                  "Recirculating Aquaculture System (RAS)"))
+# set palette
+n_col <- nrow(farming_count)
+palette <- color_palette(my_pal, n = n_col)
+farming_count <- mutate(farming_count, palette = as.vector(palette))
+# stacked bar plot
+ggplot(farming_count,
+       aes(fill = Farming.system.coding, y = n, x = 1)
+) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = farming_count$palette) +
+  theme_classic() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title.x  = element_blank(),
+    legend.text = element_markdown()
+  ) +
+  ylab("Proportion of the evidence base") +
+  ylim(c(0,nrow(farming))) +
+  guides(fill = guide_legend(title = "Farming system"))
+
+#### close ####
+
+# 
+```
+
+## Subtitle 2
+
+
+```{r chunk_2, echo=FALSE}
+
+```
+
